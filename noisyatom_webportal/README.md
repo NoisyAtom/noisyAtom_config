@@ -67,7 +67,7 @@ From the root folder of this readme file do:
 
 ## Deploy The Server
 As the CMS user, this setsup the project folder, pulls the production branch, runs the requirements.txt file. It
-then runs the DB migration and CollectStatic commands.
+then runs the DB migration and CollectStatic commands. Finally it restarts the nginx and gunicorn services.
 From the root folder of this readme file do:
 
 	/> ansible-playbook deploy_system.yml  --ask-vault-pass
@@ -76,7 +76,7 @@ From the root folder of this readme file do:
 ## Upgrade The Server
 
 
-## Soft Upgrde The Server
+## Soft Upgrade The Server
 
 
 ## Remove Software

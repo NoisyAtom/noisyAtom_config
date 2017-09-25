@@ -1,0 +1,98 @@
+# This file will connect to a remote server named in the 'host' variable and mapped in our hosts file.
+# As the system administrator "adminuser". It then installs:
+# postgres, 
+# virtual env, 
+# nginx, 
+# system packages,
+# pip; and 
+# django 
+# onto a vanilla system. It will then bring up all the services required.
+
+# **** Prerequisits ****
+# 1) You need to have a run the create_users.yml script and performed it's prerequisits.
+# 2) You need to know the password of the 'protected_vars.yml' file which is used to provide encrypted
+#	 data for password variables in the script.
+
+# To run:
+# />  ansible-playbook install_software.yml  --ask-vault-pass
+
+
+---
+- hosts: NoisyAtomUbuntu14
+  user: '{{adminuser}}'
+  become: true                                                # This will tell ansible to become 'sudo' to issue commands on the machine
+
+  vars_files:
+  - vars/project_variables.yml
+#  - vars/unprotected_vars.yml                                # Used for testing with unencrypted password file i.e. no vault
+  - vars/protected_vars.yml
+                                                              # the root account will be locked via SSH by this point
+  pre_tasks:
+    - name: Check that the server's alive!
+      action: ping
+
+    - name: Running update
+      apt:
+        update_cache=yes
+        cache_valid_time=3600
+      register: result
+
+    - name: Output From Running Update
+      debug:
+        var: result
+
+  handlers:
+  - name: Stop the Nginx Server
+    service: name=nginx state=stopped enabled=yes
+
+  tasks:
+    - name: Installing required packages ( python-pip, python-dev, libpq-dev, postgresql, postgresql-contrib psycopg2 and nginx )
+      apt: name={{item}} state=present
+      with_items:
+       - python-pip
+       - python-dev
+       - postgresql
+       - postgresql-client
+       - git
+       - python-pip
+       - libpq-dev
+       - python-psycopg2
+       - nginx
+
+    ## Start the nginx server.
+    - name: Start the Nginx Server
+      service: name=nginx state=started enabled=yes
+      notify: Stop the Nginx Server
+
+    - name: Ensure database is created
+      become: yes
+      become_user: postgres
+      postgresql_db: name={{dbname}}
+
+    - name: Ensure user has access to database
+      become: yes
+      become_user: postgres
+      postgresql_user: db={{dbname}} name={{dbuser}} password={{dbpassword}} priv=ALL
+
+    - name: Ensure user does not have unnecessary privilege
+      become: yes
+      become_user: postgres
+      postgresql_user: name={{dbuser}} role_attr_flags=NOSUPERUSER,NOCREATEDB
+
+
+- hosts: NoisyAtomUbuntu14
+  user: '{{cmsuser}}'
+
+  vars_files:
+  - vars/project_variables.yml
+#  - vars/unprotected_vars.yml                                # Used for testing with unencrypted password file i.e. no vault
+  - vars/protected_vars.yml
+
+  tasks:
+    ## Setup django this has to install virtual env, then as the CMS user it then uses the PIP
+    ## module to create the virtual environment and the python version that will be used for this.
+    - name: Install a virtual environment
+      pip: name=virtualenv state=present
+
+    - name: Create virtualenv with django installed in it as noisy_atom_cms user
+      pip: name=django version={{django_version}} virtualenv={{environment_path}} virtualenv_python={{python_version}}

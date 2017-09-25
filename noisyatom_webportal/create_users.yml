@@ -12,6 +12,9 @@
 # 4) You need to know the password of the 'protected_vars.yml' file which is used to provide encrypted
 #	 data for password variables in the script.
 
+# To run:
+# />  ansible-playbook create_users.yml  --ask-vault-pass
+
 
 ---
 - hosts: NoisyAtomUbuntu14
@@ -63,13 +66,13 @@
       - '{{cmsuser}}'
 
   # Add our admin user to the 'sudo' users file and allow them to not require passwords for sudo access.
-#  - name: Add Sudoers | update sudoers file and validate
-#    lineinfile: "dest=/etc/sudoers
-#      insertafter=EOF
-#      line='{{ adminuser }} ALL=(ALL) NOPASSWD: ALL'
-#      regexp='{{ adminuser }} ALL=(ALL) NOPASSWD: ALL'
-#      state=present"
-#    become: true
+  - name: Add Sudoers | update sudoers file and validate
+    lineinfile: "dest=/etc/sudoers
+      insertafter=EOF
+      line='{{ adminuser }} ALL=(ALL) NOPASSWD: ALL'
+      regexp='{{ adminuser }} ALL=(ALL) NOPASSWD: ALL'
+      state=present"
+    become: true
 
   # Since this could be on a fresh Digital Ocean Machine we should ensure we setup a proper bash shell! And not that crap
   # shell you normally get with no arrow up or tab complet commands. So lets do that for both users.
@@ -83,12 +86,12 @@
 
   # We need to stop a user loging in with root access via SSH. Someone could brute force attack our server on our root
   # accont
-  #- name: Disallow root SSH access
-  #  lineinfile: dest=/etc/ssh/sshd_config
-  #            regexp="^PermitRootLogin"
-  #            line="PermitRootLogin no"
-  #            state=present
-  #  notify: Restart ssh
+  - name: Disallow root SSH access
+    lineinfile: dest=/etc/ssh/sshd_config
+              regexp="^PermitRootLogin"
+              line="PermitRootLogin no"
+              state=present
+    notify: Restart ssh
 
 
   # if we have a variable setup in our vars directory to change our default SSH port it will change it otherwise it will

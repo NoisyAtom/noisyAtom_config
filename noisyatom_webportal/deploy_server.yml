@@ -1,0 +1,135 @@
+# This file will connect to a remote server named in the 'host' variable and mapped in our hosts file.
+# As the system CMS "cmsuser". It then:
+# clone the production repository,
+# run requirements.txt,
+# setup gunicorn,
+# copy config files,
+# run migrations,
+# run collectstatic,
+# restart nginx and gunicorn
+
+# **** Prerequisits ****
+# 1) You need to have run install_software.yml and performed it's prerequisits.
+# 2) You need to know the password of the 'protected_vars.yml' file which is used to provide encrypted
+#	 data for password variables in the script.
+
+# To run:
+# />  ansible-playbook deploy_server.yml  --ask-vault-pass
+
+
+---
+- hosts: NoisyAtomUbuntu14
+  user: '{{cmsuser}}'
+
+  environment:                                                  # Variables to inject at deployment time to setup the django database connection
+    NOISY_ATOM_DB_PASSWORD: '{{dbpassword}}'
+    NOISY_ATOM_DB_USER: '{{dbuser}}'
+    NOISY_ATOM_DB: '{{dbname}}'
+
+  vars_files:
+  - vars/project_variables.yml
+#  - vars/unprotected_vars.yml                                  # Used for testing with unencrypted password file i.e. no vault
+  - vars/protected_vars.yml
+
+  vars:
+
+  pre_tasks:
+    # The simplest task - check we can ping our server
+    - name: Check that the server's alive!
+      action: ping
+
+  tasks:
+    # install all packages we need from git by taking our build straight from the production branch
+    - name: Clone project from git branch 'production'
+      git:
+        repo={{project_repo}}
+        dest={{project_root}}
+        remote=origin version={{git_branch}}
+
+    # This installs all our packages from the requirements.txt file in our repository
+    - name: Install dependencies into virtualenv (i.e. install requirements.txt)
+      action: pip requirements='{{project_root}}'/'{{project_name}}'/requirements.txt virtualenv='{{environment_path}}' state=present
+
+    # Run the makemigrations on the installed django app in 'django_dir'. This only migrates the initial django DB
+    - name: Django Migrate DB Tables - only migrate initial tables
+      django_manage: command=migrate {{item}}
+        virtualenv={{environment_path}}
+        app_path={{project_root}}/{{project_name}}
+      with_items:
+        - about
+        - admin
+        - auth
+        - contact
+        - contenttypes
+        - post
+        - sessions
+
+    # Collect static files from the installed directories to where they are served from. This is controlled in the
+    # settings.py file
+    - name: Django Collectstatic Files
+      django_manage: command=collectstatic
+        virtualenv={{environment_path}}
+        app_path={{project_root}}/{{project_name}}
+        #settings={{django_settings}}
+
+    # Before we create a django super user we should check to see if they exist first
+    - name: Check if django superuser exists
+      django_manage: command="shell -c 'from django.contrib.auth.models import User; print( User.objects.filter(username="nherriot").exists()) ' "
+        virtualenv={{environment_path}}
+        app_path={{project_root }}/{{project_name}}
+      register: checksuperuser
+      changed_when: False
+
+    # Print out to the screen the result of checking for our super user - used for debuging problems
+    - name: Printing Debug For Detecting Super User
+      debug:
+        var: checksuperuser
+
+    # Create an initial superuser. If the user is already created don't create him.
+    - name: Django Create Super User
+      django_manage: command="createsuperuser --username={{django_admin_password}} --noinput --username={{django_admin_user}} --email={{django_admin_email}}"
+        virtualenv={{environment_path}}
+        app_path={{project_root }}/{{project_name}}
+      when: not checksuperuser.out | search("True")
+
+
+# Now connect to the remote machine as the admin user since we want to setup nginx and gunicorn
+- hosts: NoisyAtomUbuntu14
+  user: '{{adminuser}}'
+  become: true                                                 # This will tell ansible to become 'sudo' to issue commands on the machine
+
+  vars_files:
+  - vars/project_variables.yml
+#  - vars/unprotected_vars.yml                                # Used for testing with unencrypted password file i.e. no vault
+  - vars/protected_vars.yml
+
+  handlers:
+    - name: Stop the Nginx Server
+      service: name=nginx state=stopped enabled=yes
+
+    - name: Reload Nginx to enable the site
+      service: name=nginx state=restart enabled=yes
+
+    - name: Reload Gunicorn WSGI Server
+      service: name=gunicorn state=reloaded enabled=yes
+
+  tasks:
+    ## Configure our gunicorn wsgi server. We need to copy our gunicorn.conf file across to the server.
+    - name: Copy 'gunicorn.con' And 'naecommerce' Nginx Config To Our Server
+      copy: src={{item.file_name}} dest={{item.destination_directory}} owner=root group=root mode="u=r,g=r,o=rw"
+      with_items:
+        - { file_name: 'config/gunicorn.conf', destination_directory: '/etc/init' }
+        - { file_name: 'config/naecommerce', destination_directory: '/etc/nginx/sites-available' }
+
+    ## Map the configuration files directory in Nginx to the enabled directory.
+    ## This has the effect of enabling the URL's mapped in the config file.
+    - name: Link naecomerce Nginx config file in sites-available to sites-enabled
+      file: src=/etc/nginx/sites-available/naecommerce dest=/etc/nginx/sites-enabled/naecommerce state=link
+      notify: Reload Nginx to enable the site
+      notify: Reload Gunicorn WSGI Server
+
+    - name: Reload Nginx to enable the site
+      service: name=nginx state=restarted enabled=yes
+
+    - name: Reload Gunicorn WSGI Server
+      service: name=gunicorn state=reloaded enabled=yes
