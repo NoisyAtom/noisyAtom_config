@@ -1,0 +1,100 @@
+# This file will connect to a remote server named in the 'host' variable and mapped in our hosts file.
+# As the system CMS "cmsuser". It then:
+# clone the production repository,
+# Starts the virtual env, migrates the DB and collects static files
+# As the system admin "admin". It then:
+# restarts gunicorn,
+# restarts nginx.
+
+# **** Prerequisits ****
+# 1) You need to have run deploy_server.yml and performed it's prerequisits.
+# 2) You need to know the password of the 'protected_vars.yml' file which is used to provide encrypted
+#	 data for password variables in the script.
+
+# To run:
+# />  ansible-playbook upgrade_new_release.yml  --ask-vault-pass
+
+
+---
+- hosts: NoisyAtomUbuntu14
+#- hosts: ub14-test
+  user: '{{cmsuser}}'
+
+  environment:                                                  # Variables to inject at deployment time to setup the django database connection
+    NOISY_ATOM_DB_PASSWORD: '{{dbpassword}}'
+    NOISY_ATOM_DB_USER: '{{dbuser}}'
+    NOISY_ATOM_DB: '{{dbname}}'
+
+  vars_files:
+  - vars/project_variables.yml
+#  - vars/unprotected_vars.yml                                  # Used for testing with unencrypted password file i.e. no vault
+  - vars/protected_vars.yml
+
+  vars:
+
+  pre_tasks:
+    # The simplest task - check we can ping our server
+    - name: Check that the server's alive!
+      action: ping
+
+  tasks:
+    # install all packages we need from git by taking our build straight from the production branch
+    - name: Clone project from git branch 'production'
+      git:
+        repo={{project_repo}}
+        dest={{project_root}}
+        remote=origin version={{git_branch}}
+
+    # This installs all our packages from the requirements.txt file in our repository
+    - name: Install dependencies into virtualenv (i.e. install requirements.txt)
+      action: pip requirements='{{project_root}}'/'{{project_name}}'/requirements.txt virtualenv='{{environment_path}}' state=present
+
+    # Run the makemigrations on the installed django app in 'django_dir'. This only migrates the initial django DB
+    - name: Django Migrate DB Tables - only migrate initial tables
+      django_manage: command=migrate {{item}}
+        virtualenv={{environment_path}}
+        app_path={{project_root}}/{{project_name}}
+      with_items:
+        - about
+        - admin
+        - auth
+        - contact
+        - contenttypes
+        - post
+        - sessions
+
+    # Collect static files from the installed directories to where they are served from. This is controlled in the
+    # settings.py file
+    - name: Django Collectstatic Files
+      django_manage: command=collectstatic
+        virtualenv={{environment_path}}
+        app_path={{project_root}}/{{project_name}}
+        #settings={{django_settings}}
+
+# Now connect to the remote machine as the admin user since we want to setup nginx and gunicorn
+- hosts: NoisyAtomUbuntu14
+#- hosts: ub14-test
+  user: '{{adminuser}}'
+  become: true                                                 # This will tell ansible to become 'sudo' to issue commands on the machine
+
+  vars_files:
+  - vars/project_variables.yml
+#  - vars/unprotected_vars.yml                                # Used for testing with unencrypted password file i.e. no vault
+  - vars/protected_vars.yml
+
+  handlers:
+    - name: Stop the Nginx Server
+      service: name=nginx state=stopped enabled=yes
+
+    - name: Reload Nginx to enable the site
+      service: name=nginx state=restart enabled=yes
+
+    - name: Reload Gunicorn WSGI Server
+      service: name=gunicorn state=reloaded enabled=yes
+
+  tasks:
+    - name: Reload Nginx to enable the site
+      service: name=nginx state=restarted enabled=yes
+
+    - name: Reload Gunicorn WSGI Server
+      service: name=gunicorn state=reloaded enabled=yes

@@ -18,6 +18,7 @@ Add your host name and IP address e.g.:
 
 
 ## Setup SSH On Your Machine
+----------------------------
 Create an SSH public and private key pair on your host machine. To learn more about what public/private keys are 
 and used for or what the SSH protocol does read this:
 https://www.digitalocean.com/community/tutorials/understanding-the-ssh-encryption-and-connection-process
@@ -54,6 +55,7 @@ Here is a brief description of each playbook you’ll find:
 
 
 ## Setup Users On Your Machine
+------------------------------
 As the root user, setup an admin user and a CMS user. The admin user will have sudo access to the machine. The CMS 
 user will have limited access to the machine. The admin and CMS user names are defined in the /vars/project_variables.yml file.
 * Note: Once you run this script root will not be able to login directly via SSH.
@@ -71,6 +73,7 @@ From the root folder of this readme file do:
 
 
 ## Install Software On Your Machine
+-----------------------------------
 As the admin user, this installs all the required base packages needed on your machine. Pip, Django, Nginx, Postgres and so on. 
 It configures the DB, DB name and the DB user. It creates a virtual environment and installs django and python to the virtual 
 env. It starts Postgres and Nginx. It finally stops Nginx and root access via SSH.
@@ -88,6 +91,7 @@ From the root folder of this readme file do:
 
 
 ## Deploy The Server
+---------------------
 As the CMS user, this sets up the project folder, pulls the production branch, runs the requirements.txt file. It
 then runs the DB migration and CollectStatic commands. Finally it restarts the nginx and gunicorn services.
 
@@ -131,6 +135,20 @@ From the root folder of this readme file do:
 
 
 ## Upgrade The Server
+---------------------
+As the CMS user, this pulls the production branch, runs the requirements.txt file. It then runs the DB migration and 
+CollectStatic commands. Finally it restarts the nginx and gunicorn services.
+
+### Setup Host Variable If Needed
+The upgrade_new_release.yml file has a hosts variable at the top of the script and further down near the bottom. Ensure that 
+the host you want to run the script against is configured here and matches what you have in the 'host' file. At the time of 
+writing it was tested against NoisyAtomUbuntu14 machine. e.g.
+	- hosts: NoisyAtomUbuntu14
+
+### Running The File
+From the root folder of this readme file do:
+	/> ansible-playbook upgrade_new_release.yml  --ask-vault-pass
+
 
 
 ## Soft Upgrade The Server
