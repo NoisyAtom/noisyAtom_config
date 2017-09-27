@@ -18,6 +18,7 @@
 
 ---
 - hosts: NoisyAtomUbuntu14
+#- hosts: ub14-test
   user: root
 
   vars_files:
@@ -66,13 +67,23 @@
       - '{{cmsuser}}'
 
   # Add our admin user to the 'sudo' users file and allow them to not require passwords for sudo access.
-  - name: Add Sudoers | update sudoers file and validate
+  - name: Add Sudoers | update sudoers file to allow admin to not require password on remote machine
     lineinfile: "dest=/etc/sudoers
       insertafter=EOF
       line='{{ adminuser }} ALL=(ALL) NOPASSWD: ALL'
       regexp='{{ adminuser }} ALL=(ALL) NOPASSWD: ALL'
       state=present"
     become: true
+
+  # Add our admin user to the 'sudo' users file and allow them to not require passwords for sudo access.
+  - name: Add Sudoers | update sudoers file to allow cms to not require password on remote machine
+    lineinfile: "dest=/etc/sudoers
+      insertafter=EOF
+      line='{{ cmsuser }} ALL=(ALL) NOPASSWD: ALL'
+      regexp='{{ cmsuser }} ALL=(ALL) NOPASSWD: ALL'
+      state=present"
+    become: true
+
 
   # Since this could be on a fresh Digital Ocean Machine we should ensure we setup a proper bash shell! And not that crap
   # shell you normally get with no arrow up or tab complet commands. So lets do that for both users.

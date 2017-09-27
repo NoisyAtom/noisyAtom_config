@@ -1,0 +1,16 @@
+
+server {
+    listen {{port_number}};
+    server_name {{server_ip_address}};
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static-cdn/ {
+        root {{project_root_folder}};
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:{{project_root_socket_file}}         # e.g. /home/noisy_atom_cms/NoisyAtomPortal/noisyatom/naproject.sock;
+    }
+
+}

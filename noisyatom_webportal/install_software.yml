@@ -19,6 +19,7 @@
 
 ---
 - hosts: NoisyAtomUbuntu14
+#- hosts: ub14-test
   user: '{{adminuser}}'
   become: true                                                # This will tell ansible to become 'sudo' to issue commands on the machine
 
@@ -81,6 +82,7 @@
 
 
 - hosts: NoisyAtomUbuntu14
+#- hosts: ub14-test
   user: '{{cmsuser}}'
 
   vars_files:
@@ -92,6 +94,8 @@
     ## Setup django this has to install virtual env, then as the CMS user it then uses the PIP
     ## module to create the virtual environment and the python version that will be used for this.
     - name: Install a virtual environment
+      become: true
+      become_method: sudo
       pip: name=virtualenv state=present
 
     - name: Create virtualenv with django installed in it as noisy_atom_cms user

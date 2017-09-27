@@ -19,6 +19,7 @@
 
 ---
 - hosts: NoisyAtomUbuntu14
+#- hosts: ub14-test
   user: '{{cmsuser}}'
 
   environment:                                                  # Variables to inject at deployment time to setup the django database connection
@@ -95,6 +96,7 @@
 
 # Now connect to the remote machine as the admin user since we want to setup nginx and gunicorn
 - hosts: NoisyAtomUbuntu14
+#- hosts: ub14-test
   user: '{{adminuser}}'
   become: true                                                 # This will tell ansible to become 'sudo' to issue commands on the machine
 
