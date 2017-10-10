@@ -20,5 +20,5 @@ django_settings: config.settings                          # this is where we get
 git_branch: production                                    # this is the branch we pull from for our production system
 
 # software version
-python_version: python3.4
+python_version: python3.5
 django_version: 1.9.2
