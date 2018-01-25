@@ -71,11 +71,17 @@
         app_path={{project_root}}/{{project_name}}
         #settings={{django_settings}}
 
+
 # Now connect to the remote machine as the admin user since we want to setup nginx and gunicorn
 - hosts: NoisyAtomUbuntu14
 #- hosts: ub14-test
   user: '{{adminuser}}'
   become: true                                                 # This will tell ansible to become 'sudo' to issue commands on the machine
+
+  environment:                                                  # Variables to inject at deployment time to setup the django database connection
+    NOISY_ATOM_DB_PASSWORD: '{{dbpassword}}'
+    NOISY_ATOM_DB_USER: '{{dbuser}}'
+    NOISY_ATOM_DB: '{{dbname}}'
 
   vars_files:
   - vars/project_variables.yml
@@ -83,6 +89,8 @@
   - vars/protected_vars.yml
 
   handlers:
+
+
     - name: Stop the Nginx Server
       service: name=nginx state=stopped enabled=yes
 
@@ -93,6 +101,26 @@
       service: name=gunicorn state=reloaded enabled=yes
 
   tasks:
+
+#    - shell: echo $NOISY_ATOM_DB
+#      register: result
+#    - shell: echo $NOISY_ATOM_DB_USER
+#      register: result2
+#    - shell: echo $NOISY_ATOM_DB_PASSWORD
+#      register: result3
+
+    # Print out to the screen the result of checking for our super user - used for debuging problems
+#    - name: Printing Debug For DB Name
+#      debug:
+#        var: result
+#    - name: Printing Debug For DB user
+#      debug:
+#        var: result2
+#    - name: Printing Debug For DB Name and DB password
+#      debug:
+#        var: result3
+
+
     - name: Reload Nginx to enable the site
       service: name=nginx state=restarted enabled=yes
 

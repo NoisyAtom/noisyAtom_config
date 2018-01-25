@@ -88,7 +88,9 @@
 
     # Create an initial superuser. If the user is already created don't create him.
     - name: Django Create Super User
-      django_manage: command="createsuperuser --username={{django_admin_password}} --noinput --username={{django_admin_user}} --email={{django_admin_email}}"
+      # The line below is the correct way to add a user - but django does not support passing password - when it does we can swap out the HACK on the line below!
+      #django_manage: command="createsuperuser --noinput --username={{django_admin_user}} --password={{django_admin_password}} --email={{django_admin_email}}"
+      django_manage: command="shell -c 'from django.contrib.auth.models import User; User.objects.create_superuser("{{django_admin_user}}", "{{django_admin_email}}", "{{django_admin_password}}") ' "
         virtualenv={{environment_path}}
         app_path={{project_root }}/{{project_name}}
       when: not checksuperuser.out | search("True")
