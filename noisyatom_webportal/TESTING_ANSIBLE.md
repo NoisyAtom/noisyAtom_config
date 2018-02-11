@@ -15,7 +15,7 @@ From chapter 1 you should have a host file in this directory that maps a name to
 
 Run the command:
 
-	/>  ansible  ubuntu_14_begin  -m  ping  -u  root  --ask-pas
+	/>  ansible NoisyAtomUbuntu14 -m  ping  -u  root  --ask-pas
 		SSH password: 
 		46.101.45.29 | SUCCESS => {
 			"changed": false, 
@@ -25,6 +25,18 @@ Run the command:
 The command is 'ansible'. The module is 'ping'. The user we are using is -u. We also pass --ask-pas which tells ansible to
 ask for the password. Normally ansible will not allow you to type passwords and requires public/private key on the remote server.
 
+If you have already run ansible scripts which disallow 'root' access you might get a message like this:
+
+104.236.14.123 | UNREACHABLE! => {
+    "changed": false, 
+    "msg": "Authentication failure.", 
+    "unreachable": true
+}
+
+In this case you can try the same command but as the machine admin user e.g. :
+
+	/>  ansible NoisyAtomUbuntu14 -m  ping  -u  noisy_atom_admin  --ask-pas
+	
 
 ## Step 2 - Get Your Public Key Onto The Remote Server
 
@@ -33,12 +45,16 @@ Install your public key onto your remote server. If you like you can see your ne
 	~/.ssh/id_rsa.pub
 	
 Install the keys with the ssh-copy-id command like:
-	/>  ssh-copy-id root@104.236.14.12
+	/>  ssh-copy-id root@104.236.14.123
 	
 Check your key is installed by trying to SSH to the machine:
-	/>  ssh root@104.236.14.12
+	/>  ssh root@104.236.14.123
 
 You will not be asked for your password! Great stuff!!!
+
+Please bare in mind that for different users on the server you will need to copy across SSH keys. i.e. if you have a cms and 
+admin user you will also have to copy those keys to the remote machine e.g. :
+	/>  ssh-copy-id noisy_atom_admin@104.236.14.123
 
 
 ## Step 3 - Test Ansible Ping
@@ -49,7 +65,7 @@ asking for password.
 
 Run the command:
 
-	/>  ansible  ubuntu_14_begin  -m  ping  -u  root
+	/>  ansible  NoisyAtomUbuntu14  -m  ping  -u  root
 		SSH password: 
 		46.101.45.29 | SUCCESS => {
 			"changed": false, 

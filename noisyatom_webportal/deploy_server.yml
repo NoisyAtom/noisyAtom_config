@@ -58,12 +58,18 @@
         app_path={{project_root}}/{{project_name}}
       with_items:
         - about
+        - account
         - admin
         - auth
+        - blogs
+        - catalog
         - contact
         - contenttypes
+        - iot_device
         - post
+        - qrcode
         - sessions
+        - sites
 
     # Collect static files from the installed directories to where they are served from. This is controlled in the
     # settings.py file

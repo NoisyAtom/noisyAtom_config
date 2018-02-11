@@ -1,7 +1,7 @@
 
 server {
     listen 80;
-    server_name 104.236.14.123;
+    server_name 104.236.14.123 www.noisyatom.tech noisyatom.tech ;
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static-cdn/ {
