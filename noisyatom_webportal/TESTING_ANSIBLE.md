@@ -42,11 +42,11 @@ ask for the password. Normally ansible will not allow you to type passwords and 
 
 If you have already run ansible scripts which disallow 'root' access you might get a message like this:
 
-104.236.14.123 | UNREACHABLE! => {
+***104.236.14.123 | UNREACHABLE! => {
     "changed": false, 
     "msg": "Authentication failure.", 
     "unreachable": true
-}
+}***
 
 In this case you can try the same command but as the machine admin user e.g. :
 
