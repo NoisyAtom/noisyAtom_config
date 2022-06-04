@@ -7,11 +7,17 @@ commands. It then sets up your public private key on the remote server and runs 
 ## Step 1 - Test Ansible Works!
 
 We need to send the equivalent of a ping command for ansible which shows our connection works. To do this we need to run the
-ansible 'ping' command to your remote server. Ansible needs to know the remote server address, the user it should pretend to be
-and the password of that user.
-From chapter 1 you should have a host file in this directory that maps a name to an IP address. We are using the name:
+ansible 'ping' command to your remote server. To do this Ansible needs to use the **sshpass** program. Install this first:
+
+```
+	/> sudo apt install sshpass
+```
+
+Next Ansible needs to know the remote server address, the user it should pretend to be and the password of that user.
+It will find out the IP address of the machine from hour hosts file you setup in Chapter 1. Hence we will use that mapping 
+from chapter 1. You should have a host file in this directory that maps a name to an IP address. We are using the name:
 	
-	NoisyAtomUbuntu14
+	NoisyAtomUbuntu16
 
 Run the command:
 
