@@ -3,6 +3,15 @@
 This chapter 2 guide shows you how to test basic setup. It will test your remote server can receive execute and run ansible
 commands. It then sets up your public private key on the remote server and runs through test on your system to prove it works.
 
+**Note:** Before you begin make sure that you can:
+1. SSH onto the machine by manually ssh'ing onto the machine!
+2. That the username and password are correct and work!
+
+e.g.
+```
+	/> ssh root@<ip_address_of_your_server
+```
+
 
 ## Step 1 - Test Ansible Works!
 
