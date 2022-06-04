@@ -30,7 +30,7 @@ from chapter 1. You should have a host file in this directory that maps a name t
 
 Run the command:
 
-	/>  ansible NoisyAtomUbuntu14 -m  ping  -u  root  --ask-pas
+	/>  ansible NoisyAtomUbuntu16 -m  ping  -u  root  --ask-pas
 		SSH password: 
 		46.101.45.29 | SUCCESS => {
 			"changed": false, 
