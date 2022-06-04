@@ -30,21 +30,28 @@ most up to date version:
 ## Step 3
 
 Add Ansible PPA keys to the aptitude package manager:
+```
 	/>  sudo apt-add-repository ppa:ansible/ansible
-	
+```
+
 Update the new packages of your host machine:
+```
 	/>  sudo apt-get update
-	
+```	
+
 Install Ansible:
+```
 	/>	sudo apt-get install ansible
-	
+```
+
 Check your version of Ansible:
+```
 	/>  ansible --version
 	ansible 2.3.1.0
 	  config file = /etc/ansible/ansible.cfg
 	  configured module search path = Default w/o overrides
 	  python version = 2.7.12 (default, Nov 19 2016, 06:48:10) [GCC 5.4.0 20160609]	
-
+```
 
 # Step 4 - Setup Ansible For Your Project
 
@@ -55,11 +62,13 @@ You need to copy your hosts and ansible.cfg to your project directory. The platf
 ansible etc folder. This means that we can have different configurations for different projects. 
 
 Create a 'myplatforms' directory in your project directory and copy the ansible files to it.
+```
 	/> cd ~ & mkdir myPlatforms
 	/>  cd /etc/ansible
 	/>  cp hosts ~/myPlatforms/
 	/>  cp ansible.cfg ~/myPlatforms/
-	
+```
+
 ## Step 5 - Change Your Local Copy of Configuration Files 
 
 Configure your ansible.cfg file to look locally to find the hosts file. Change the file to look like:
