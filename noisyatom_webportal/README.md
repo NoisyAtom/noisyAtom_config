@@ -1,7 +1,6 @@
-# noisyAtom_config
+# Using Ansible To Deploy And Setup Noisy Atom Web Portal
 This describes the installation and setup of Noisy Atom web server. It requires that you have ansible setup on your
 host, the ansible vault password and a remote machine that you have access to as the root user. 
-
 
 
 ## Customise Your Host File
