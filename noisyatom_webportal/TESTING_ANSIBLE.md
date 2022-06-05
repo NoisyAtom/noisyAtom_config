@@ -71,6 +71,33 @@ Please bare in mind that for different users on the server you will need to copy
 admin user you will also have to copy those keys to the remote machine e.g. :
 	/>  ssh-copy-id noisy_atom_admin@104.236.14.123
 
+### Python 2 Errors On Ubuntu 18.04
+If your system is using Ubuntu 18.04 you may notice the following error when running ansible as shown above:
+
+```
+ansible NoisyAtomUbuntu18 -m  ping  -u  root
+134.209.21.58 | FAILED! => {
+    "changed": false, 
+    "module_stderr": "Shared connection to 134.209.21.58 closed.\r\n", 
+    "module_stdout": "/bin/sh: 1: /usr/bin/python: not found\r\n", 
+    "msg": "MODULE FAILURE", 
+    "rc": 127
+}
+
+```
+This is telling you that the ansible application can't find python on the system. Which is true for Ubunut18.04, only Python3 is installed as the default python interpretar. To tell ansible to use python3 you can pass in the **-e** (environment variables flag) to use python 3 - which is: **ansible_python_interpreter**
+
+The command should look like this:
+
+```
+ansible NoisyAtomUbuntu18 -m  ping  -u  root -e 'ansible_python_interpreter=/usr/bin/python3'
+134.209.21.58 | SUCCESS => {
+    "changed": false, 
+    "ping": "pong"
+}
+
+```
+
 
 ## Step 3 - Test Ansible Ping
 
