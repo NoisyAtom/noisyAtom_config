@@ -37,6 +37,11 @@ Check your key is installed by trying to SSH to the machine:
 
 ## 3. Brief Description Of Files
 Here is a brief description of each playbook you’ll find:
+
+### 3.2 create_users.yml
+This creates an admin and CMS user on the remote server. When setting up server components and installing software the admin user will be used. When running the web portal and setting the portal up only the CMS user will be used.
+
+
 * create_users.yml      – Create an admin and CMS user on the server.
 * install_software.yml  - Install nginx, django, postgres using apt, setup DB, setup virtual environment, start 
 	postgres service, start nginx, stop nginx. Block root from SSH access
