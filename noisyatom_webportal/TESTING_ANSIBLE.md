@@ -57,19 +57,28 @@ In this case you can try the same command but as the machine admin user e.g. :
 
 In Chapter 1 you create a public/private key for your host machine. We need to copy the public key to the remote machine.
 Install your public key onto your remote server. If you like you can see your new keys in dir:
+
+```
 	~/.ssh/id_rsa.pub
-	
+```
+
 Install the keys with the ssh-copy-id command like:
+```
 	/>  ssh-copy-id root@104.236.14.123
-	
+```
+
 Check your key is installed by trying to SSH to the machine:
+```
 	/>  ssh root@104.236.14.123
+```
 
 You will not be asked for your password! Great stuff!!!
 
 Please bare in mind that for different users on the server you will need to copy across SSH keys. i.e. if you have a cms and 
 admin user you will also have to copy those keys to the remote machine e.g. :
+```
 	/>  ssh-copy-id noisy_atom_admin@104.236.14.123
+```
 
 ### Python 2 Errors On Ubuntu 18.04
 If your system is using Ubuntu 18.04 you may notice the following error when running ansible as shown above:
