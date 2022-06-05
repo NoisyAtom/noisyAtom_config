@@ -42,20 +42,25 @@ Here is a brief description of each playbook you’ll find:
 This creates an admin and CMS user on the remote server. When setting up server components and installing software the admin user will be used. When running the web portal and setting the portal up only the CMS user will be used.
 
 
-* create_users.yml      – Create an admin and CMS user on the server.
-* install_software.yml  - Install nginx, django, postgres using apt, setup DB, setup virtual environment, start 
-	postgres service, start nginx, stop nginx. Block root from SSH access
-* deploy_system.yml     – Pull from the production branch. Install requirements. Setup gunicorn. Copy config files. 
-	Migrate the DB and Collect static files. Restart nginx and gunicorn.
-* upgrade.yml           – Pull from the latest commit on production branch. Run migrate. Run collectstatic. 
-	Restart nginx and gunicorn.
-* soft_upgrade.yml      – Pull from github production branch. Run migrate. Run collectstatic. This will allow nginx 
+### 3.3. install_software.yml
+Install nginx, django, postgres  using apt, setup DB, setup virtual environment, start postgres service, start nginx, stop nginx. Block root from SSH access on your machine.
+	
+### 3.4 deploy_system.yml
+The deploy script pulls from the production branch. Installs the requirements.txt file. Setup of Gunicorn. Copy configuration files. Migrates the django database, collects the static files. Then restarts nginx and gunicorn.
+
+### 3.5 upgrade.yml
+This pulls the latest commit on the production branche. Run's the migration script. Run's collectstatic files. Restarts the nginx and gunicorn server.
+
+### 3.6 soft_upgrade.yml
+Pull from github production branch. Run migrate. Run collectstatic. This will allow nginx 
 	to reload python files as they are requested and cache runs out.
-* remove_software.yml   - Removes software components with apt. Deletes project directories. Deletes nginx and
-	gunicorn files.
-* delete_users.yml      – Connects in as admin user. Allows root access via SSH. Connects as root and and removes 
-	admin and CMS users.
-		
+	
+### 3.7 remove_software.yml
+Removes software components with apt. Deletes project directories. Deletes nginx and
+gunicorn files.
+
+### 3.8 delete_users.yml
+Connects in as admin user. Allows root access via SSH. Connects as root and and removes admin and CMS users.
 
 
 ## 4. Setup Users On Your Machine
