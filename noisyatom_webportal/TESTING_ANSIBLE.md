@@ -9,7 +9,7 @@ commands. It then sets up your public private key on the remote server and runs 
 
 e.g.
 ```
-	/> ssh root@<ip_address_of_your_server
+	/> ssh root@<ip_address_of_your_server>
 ```
 
 
