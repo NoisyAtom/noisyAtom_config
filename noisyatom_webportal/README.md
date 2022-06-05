@@ -73,12 +73,15 @@ user will have limited access to the machine. The admin and CMS user names are d
 The create_users.yml file has a hosts variable at the top of the script. Ensure that the host you want to run the script against 
 is configured here  and matches what you have in the 'host' file. At the time of writing it was tested against NoisyAtomUbuntu14 
 machine. e.g.
+```
 	- hosts: NoisyAtomUbuntu14
+```
 
 ### 4.2 Running The File
 From the root folder of this readme file do:
+```
 	/> ansible-playbook create_users.yml  --ask-vault-pass
-
+```
 
 
 ## 5. Install Software On Your Machine
@@ -95,8 +98,9 @@ NoisyAtomUbuntu14 machine. e.g.
 
 ### 5.2 Running The File
 From the root folder of this readme file do:
+```
 	/> ansible-playbook install_software.yml  --ask-vault-pass
-
+```
 
 
 ## 6. Deploy The Server
@@ -113,10 +117,11 @@ it was tested against NoisyAtomUbuntu14 machine. e.g.
 ### 6.2 Apply The Correct Nginx File
 Currently the deployed nginx config file has a hard coded IP address. This has to be changed until templating is applied to 
 the ansible scripts. So the naecommerce file contains the line:
-
+```
 	server {
 	    listen 80;
 	    server_name 104.236.14.123;
+```
 
 Change the IP address to the machine you are deploying to.
 
@@ -125,7 +130,7 @@ If you are deploying to an IP address that does not map to a DNS name you will n
 on the production branch. But if your DNS name maps to the IP address of your machine name then it does not require updating.
 Hence for testing on an IP address you need to update the file settings.py within the config directory to include your new IP address
 like:
-
+```
     # Set allowed hosts so that we can verify where requests are coming from.
     ALLOWED_HOSTS = [
         'localhost',
@@ -135,13 +140,15 @@ like:
         '104.236.14.123',
         '46.101.19.29',
         ]
+```
 
 You then need to update and push to the production branch
 
 ### 6.4 Running The File
 From the root folder of this readme file do:
+```
 	/> ansible-playbook deploy_system.yml  --ask-vault-pass
-
+```
 
 ## 7. Upgrade The Server
 ---------------------
@@ -156,8 +163,9 @@ writing it was tested against NoisyAtomUbuntu14 machine. e.g.
 
 ### 7.2 Running The File
 From the root folder of this readme file do:
+```
 	/> ansible-playbook upgrade_new_release.yml  --ask-vault-pass
-
+```
 
 
 ## Soft Upgrade The Server
