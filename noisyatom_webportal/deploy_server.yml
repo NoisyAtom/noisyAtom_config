@@ -8,8 +8,8 @@
 # run collectstatic,
 # restart nginx and gunicorn
 
-# **** Prerequisits ****
-# 1) You need to have run install_software.yml and performed it's prerequisits.
+# **** Prerequisites ****
+# 1) You need to have run install_software.yml and performed it's prerequisites.
 # 2) You need to know the password of the 'protected_vars.yml' file which is used to provide encrypted
 #	 data for password variables in the script.
 
@@ -18,7 +18,7 @@
 
 
 ---
-- hosts: NoisyAtomUbuntu14
+- hosts: NoisyAtomUbuntu18
 #- hosts: ub14-test
   user: '{{cmsuser}}'
 
@@ -97,7 +97,7 @@
 
 
 # Now connect to the remote machine as the admin user since we want to setup nginx and gunicorn
-- hosts: NoisyAtomUbuntu14
+- hosts: NoisyAtomUbuntu18
 #- hosts: ub14-test
   user: '{{adminuser}}'
   become: true                                                 # This will tell ansible to become 'sudo' to issue commands on the machine
@@ -124,6 +124,8 @@
       with_items:
         - { file_name: 'config/gunicorn.conf', destination_directory: '/etc/init' }
         - { file_name: 'config/naecommerce', destination_directory: '/etc/nginx/sites-available' }
+      environment:
+        ENVIRONMENT: prod
 
     ## Map the configuration files directory in Nginx to the enabled directory.
     ## This has the effect of enabling the URL's mapped in the config file.

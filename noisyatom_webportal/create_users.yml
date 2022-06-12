@@ -1,10 +1,10 @@
-# This file will connect to a remote server called NoisyAtomUbuntu14 (taken from your hosts file) and  will add users
+# This file will connect to a remote server called NoisyAtomUbuntu18 (taken from your hosts file) and  will add users
 # 'noisy_atom_admin' and 'noisy_atom_cms', their passwords and directory structures. It then adds your public key on your 
 # host computer and copy for those users to the remote computer. The adminuser is added to the list of sudoers. It then setups 
 # up the bashrc script for your users and has a task to setup the SSH server to stop root access. This part is not active at 
 # the time of writing.
 
-# **** Prerequisits ****
+# **** Prerequisites ****
 # 1) You need to have a root user setup on your remote server
 # 2) The SSH private key on your local machine must be copied to the root user account on the 
 #	 remote machine. e.g. />  ssh-copy-id root@104.236.14.12
@@ -17,7 +17,7 @@
 
 
 ---
-- hosts: NoisyAtomUbuntu14
+- hosts: NoisyAtomUbuntu18
 #- hosts: ub14-test
   user: root
 

@@ -2,7 +2,6 @@
 # ************** Setup all host and IP names for servers *****************
 # ************************************************************************
 
-
 # Example server
 #[example]
 #188.166.145.32
@@ -22,50 +21,24 @@
 
 
 # ************************************************************************
-# *****************     Setup all Dilshads Resume      *******************
-[Dilshad-Resume]
-139.59.164.130
-
-
-
-# ************************************************************************
-# ***********  Setup Ubuntu 14.5 Test Server Digital Oceans **************
-
-# Ubuntu 14 Test Server On Digital Oceans
-# This machine is setup from Nicholas Herriot's account and running Ubuntu 14.5 LTR
-#[ubuntu14-test]
-#46.101.8.117
-
-
-# ************************************************************************
 # ********  Setup Ubuntu 16.1 Noisy Atom Portal Digital Oceans ***********
 
-
-[NoisyAtomUbuntu14]
+# Ubuntu 16 Noisy Atom Server On Digital Oceans
+# This machine is setup from Nicholas Herriot's account and running Ubuntu 16.1 LTR
+[NoisyAtomUbuntu16]
 104.236.14.123
 
-[ub14-test]
-46.101.19.29
-
-#[NoisyAtom-Portal:vars] # Ubuntu 16.04 hosts without python2
-#ansible_python_interpreter=/usr/bin/python2.7
-
 
 # ************************************************************************
-# ****************** Setup all groups for each server ********************
+# ****** Setup Ubuntu 18.4 Noisy Atom Porte on Digital Oceans ************
 # ************************************************************************
 
+# Ubuntu 18 Noisy Atom Server On Digital Oceans
+# This machine is setup from Nicholas Herriot's account and running Ubuntu 18.4 LTR
+[NoisyAtomUbuntu18]
+134.209.21.58
+
+[NoisyAtomUbuntu18:vars]
+ansible_python_interpreter=/usr/bin/python3
 
 
-# ************************************************************************
-# **************** Setup all variables for each server *******************
-# ************************************************************************
-
-#[ubuntu14-test:vars]
-#ansible_ssh_user=root
-
-#[NoisyAtom-Portal]
-#ansible_ssh_user=root
-
-#[Dilshad-Resume]
-#ansible_ssh_user=root

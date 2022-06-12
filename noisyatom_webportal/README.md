@@ -1,11 +1,46 @@
 # Using Ansible To Deploy And Setup Noisy Atom Web Portal
-This describes the installation and setup of Noisy Atom web server. It requires that you have ansible setup on your
-host, the ansible vault password and a remote machine that you have access to as the root user. 
+This describes the installation and setup of Noisy Atom web server. It requires that you have ansible and ansible vault
+setup on your host. The ansible vault file embedded in this project will require a  password and a remote machine to
+deploy to that you have access to as the root user. 
 
+Tha ansible vault file is: **/vars/protected_vars.yml**
+
+If you know how to use ansible vault and happy using the file provided, you can skip to the next section.
+
+### Ansible Vault Cheat Sheet
+Ansible vault encrypts sensitive data for your system. Currently sensitive data is contained within the file:
+	**protected_vars.yml** file.
+This file contains passwords for:
+1. cms user
+2. admin user
+3. database password
+4. database user name
+5. database name
+6. django admin
+7. default django user
+
+They can be viewed, edited or deleted by you provided you know the vault password. 
+Commands to view the file:
+
+```
+	/> ansible-vault view protected_vars.yml
+```
+
+Commands to edit the file:
+```
+	/> ansible-vault edit protected_vars.yml
+```
+
+Commands to encrypt a new file:
+```
+	/> ansible-vault encrypt protected_vars.yml
+```
+
+The following steps explain step by step on how to run the ansible scripts to set up a vanilla server.
 
 ## 1. Customise Your Host File
-The first thing to customize is the hosts file. This is the file where you could list all the hosts controlled by Ansible. 
-If you only want to deploy to one machine only put one entry in this.
+The first thing to customize is the hosts file. This is the file where you could list all the hosts controlled by 
+Ansible. If you only want to deploy to one machine only put one entry in this.
 
 	/> nano hosts
 	
@@ -36,7 +71,9 @@ Check your key is installed by trying to SSH to the machine:
 
 
 ## 3. Brief Description Of Files
-Here is a brief description of each playbook you’ll find:
+Here is a brief description of each playbook. A playbook is a list of instructions carried out by ansible. Ansible will
+run a playbook to carry out the tasks described on your remote machine. Here you’ll find a description of each
+playbook:
 
 ### 3.2 create_users.yml
 This creates an admin and CMS user on the remote server. When setting up server components and installing software the admin user will be used. When running the web portal and setting the portal up only the CMS user will be used.
@@ -63,16 +100,25 @@ gunicorn files.
 Connects in as admin user. Allows root access via SSH. Connects as root and and removes admin and CMS users.
 
 
-## 4. Setup Users On Your Machine
-------------------------------
-As the root user, setup an admin user and a CMS user. The admin user will have sudo access to the machine. The CMS 
-user will have limited access to the machine. The admin and CMS user names are defined in the /vars/project_variables.yml file.
+## 4. Setup Users On Your Machine With *create_users.yml
+--------------------------------------------------------
+This script will connect as root user, and setup an admin user and a CMS user. The admin user will have sudo access 
+to the machine. The CMS user will have limited access to the machine. The admin and CMS username passwords are 
+defined in:
+	**/vars/project_variables.yml** file.
+
+To manually login to the server you will need to use the admin or CMS username which are:
+* noisy_atom_admin
+* noisy_atom_cms
+
+e.g. `/> ssh noisy_atom_admin@10.10.10.10`
+
 * Note: Once you run this script root will not be able to login directly via SSH.
 
 ### 4.1 Setup Host Variable If Needed
-The create_users.yml file has a hosts variable at the top of the script. Ensure that the host you want to run the script against 
-is configured here  and matches what you have in the 'host' file. At the time of writing it was tested against NoisyAtomUbuntu14 
-machine. e.g.
+The create_users.yml file has a hosts variable at the top of the script. Ensure that the host you want to run the script 
+against is configured here  and matches what you have in the 'host' file. At the time of writing it was tested against 
+NoisyAtomUbuntu14 machine. e.g.
 ```
 	- hosts: NoisyAtomUbuntu14
 ```
@@ -86,15 +132,15 @@ From the root folder of this readme file do:
 
 ## 5. Install Software On Your Machine
 -----------------------------------
-As the admin user, this installs all the required base packages needed on your machine. Pip, Django, Nginx, Postgres and so on. 
-It configures the DB, DB name and the DB user. It creates a virtual environment and installs django and python to the virtual 
-env. It starts Postgres and Nginx. It finally stops Nginx and root access via SSH.
+As the admin user, this installs all the required base packages needed on your machine. Pip, Django, Nginx, Postgres 
+and so on. It configures the DB, DB name and the DB user. It creates a virtual environment and installs django and 
+python to the virtual env. It starts Postgres and Nginx. It finally stops Nginx and root access via SSH.
 
 ### 5.1 Setup Host Variable If Needed
-The install_software.yml file has a hosts variable at the top of the script, and near the end. Ensure that the host you want to 
-run the script against is configured here  and matches what you have in the 'host' file. At the time of writing it was tested against 
-NoisyAtomUbuntu14 machine. e.g.
-	- hosts: NoisyAtomUbuntu14
+The install_software.yml file has a hosts variable at the top of the script, and near the end. Ensure that the host 
+you want to run the script against is configured here  and matches what you have in the 'host' file. At the time of 
+writing it was tested against NoisyAtomUbuntu14 machine. e.g.
+	- hosts: NoisyAtomUbuntu18
 
 ### 5.2 Running The File
 From the root folder of this readme file do:

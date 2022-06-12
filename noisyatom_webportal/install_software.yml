@@ -18,7 +18,7 @@
 
 
 ---
-- hosts: NoisyAtomUbuntu14
+- hosts: NoisyAtomUbuntu18
 #- hosts: ub14-test
   user: '{{adminuser}}'
   become: true                                                # This will tell ansible to become 'sudo' to issue commands on the machine
@@ -50,14 +50,14 @@
     - name: Installing required packages ( python-pip, python-dev, libpq-dev, postgresql, postgresql-contrib psycopg2 and nginx )
       apt: name={{item}} state=present
       with_items:
-       - python-pip
-       - python-dev
+       - {{python_version}}
+       - python3-pip
+       - python3-dev
        - postgresql
        - postgresql-client
        - git
-       - python-pip
        - libpq-dev
-       - python-psycopg2
+       - python3-psycopg2
        - nginx
 
     ## Start the nginx server.
@@ -73,7 +73,7 @@
     - name: Ensure user has access to database
       become: yes
       become_user: postgres
-      postgresql_user: db={{dbname}} name={{dbuser}} password={{dbpassword}} priv=ALL
+      postgresql_user: db={{dbname}} name={{dbuser}} password={{dbpassword}} encrypted=yes priv=ALL
 
     - name: Ensure user does not have unnecessary privilege
       become: yes
@@ -81,7 +81,7 @@
       postgresql_user: name={{dbuser}} role_attr_flags=NOSUPERUSER,NOCREATEDB
 
 
-- hosts: NoisyAtomUbuntu14
+- hosts: NoisyAtomUbuntu18
 #- hosts: ub14-test
   user: '{{cmsuser}}'
 

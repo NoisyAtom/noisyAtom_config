@@ -18,8 +18,8 @@ project_name: noisyatom                                   # this is the name of 
 project_repo: https://github.com/nherriot/noisy-atom-portal.git
 django_settings: config.settings                          # this is where we get our settings.py from
 #git_branch: production                                    # this is the branch we pull from for our production system
-git_branch: ISU003_Deployed_Production_Server_Cant_Connect_To_DB   # temporary added for testing.
+git_branch: master
 
 # software version
-python_version: python3.5
-django_version: 1.9.2
+python_version: python3.8
+django_version: 2
