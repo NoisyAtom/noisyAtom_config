@@ -21,9 +21,7 @@ gunicorn_service_file: gunicorn.service                   # this is the name of 
 gunicorn_socket_file: gunicorn.socket                     # this is the name of the file to setup a systemd socket for gunicorn
 nginx_config: noisyatom                                   # this is the name of the file to setup a systemd service for nginx
 #git_branch: production                                   # this is the branch we pull from for our production system
-#git_branch: master
-# temp git-branch to allow testing of new scripts. DO NOT COMMIT THIS TO MASTER BRANCH!
-git_branch: 48-get-ansible-scripts-working-with-the-noisy-atom-web-site
+git_branch: master
 # software version
 python_version: python3.8
 django_version: 2
