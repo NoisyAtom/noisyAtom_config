@@ -36,7 +36,7 @@
 # Ubuntu 18 Noisy Atom Server On Digital Oceans
 # This machine is setup from Nicholas Herriot's account and running Ubuntu 18.4 LTR
 [NoisyAtomUbuntu18]
-134.209.21.58
+167.99.92.82
 
 [NoisyAtomUbuntu18:vars]
 ansible_python_interpreter=/usr/bin/python3

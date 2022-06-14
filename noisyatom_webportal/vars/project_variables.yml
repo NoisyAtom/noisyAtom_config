@@ -17,9 +17,13 @@ project_root: ~/NoisyAtomPortal                           # this is the root fol
 project_name: noisyatom                                   # this is the name of our project
 project_repo: https://github.com/nherriot/noisy-atom-portal.git
 django_settings: config.settings                          # this is where we get our settings.py from
-#git_branch: production                                    # this is the branch we pull from for our production system
-git_branch: master
-
+gunicorn_service_file: gunicorn.service                   # this is the name of the file to setup a systemd service for gunicorn
+gunicorn_socket_file: gunicorn.socket                     # this is the name of the file to setup a systemd socket for gunicorn
+nginx_config: noisyatom                                   # this is the name of the file to setup a systemd service for nginx
+#git_branch: production                                   # this is the branch we pull from for our production system
+#git_branch: master
+# temp git-branch to allow testing of new scripts. DO NOT COMMIT THIS TO MASTER BRANCH!
+git_branch: 48-get-ansible-scripts-working-with-the-noisy-atom-web-site
 # software version
 python_version: python3.8
 django_version: 2

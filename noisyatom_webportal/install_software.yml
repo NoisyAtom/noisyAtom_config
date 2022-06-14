@@ -35,7 +35,7 @@
     - name: Running update
       apt:
         update_cache=yes
-        cache_valid_time=3600
+        cache_valid_time=30
       register: result
 
     - name: Output From Running Update
@@ -50,7 +50,7 @@
     - name: Installing required packages ( python-pip, python-dev, libpq-dev, postgresql, postgresql-contrib psycopg2 and nginx )
       apt: name={{item}} state=present
       with_items:
-       - {{python_version}}
+       - '{{python_version}}'
        - python3-pip
        - python3-dev
        - postgresql

@@ -102,6 +102,12 @@
   user: '{{adminuser}}'
   become: true                                                 # This will tell ansible to become 'sudo' to issue commands on the machine
 
+  environment:
+    ENVIRONMENT: "prod"
+    NOISY_ATOM_DB_PASSWORD: '{{dbpassword}}'
+    NOISY_ATOM_DB_USER: '{{dbuser}}'
+    NOISY_ATOM_DB: '{{dbname}}'
+
   vars_files:
   - vars/project_variables.yml
 #  - vars/unprotected_vars.yml                                # Used for testing with unencrypted password file i.e. no vault
@@ -114,28 +120,27 @@
     - name: Reload Nginx to enable the site
       service: name=nginx state=restart enabled=yes
 
-    - name: Reload Gunicorn WSGI Server
-      service: name=gunicorn state=reloaded enabled=yes
+    - name: Restart Gunicorn WSGI Server
+      service: name=gunicorn state=restarted enabled=yes
 
   tasks:
     ## Configure our gunicorn wsgi server. We need to copy our gunicorn.conf file across to the server.
-    - name: Copy 'gunicorn.con' And 'naecommerce' Nginx Config To Our Server
+    - name: Copy 'gunicorn.socket', 'gunicorn.service' Gunicorn config And 'noisyatom' Nginx Config To Our Server
       copy: src={{item.file_name}} dest={{item.destination_directory}} owner=root group=root mode="u=r,g=r,o=rw"
       with_items:
-        - { file_name: 'config/gunicorn.conf', destination_directory: '/etc/init' }
-        - { file_name: 'config/naecommerce', destination_directory: '/etc/nginx/sites-available' }
-      environment:
-        ENVIRONMENT: prod
+        - { file_name: 'config/{{gunicorn_socket_file}}', destination_directory: '/etc/systemd/system' }
+        - { file_name: 'config/{{gunicorn_service_file}}', destination_directory: '/etc/systemd/system' }
+        - { file_name: 'config/{{nginx_config}}', destination_directory: '/etc/nginx/sites-available' }
 
     ## Map the configuration files directory in Nginx to the enabled directory.
     ## This has the effect of enabling the URL's mapped in the config file.
-    - name: Link naecomerce Nginx config file in sites-available to sites-enabled
-      file: src=/etc/nginx/sites-available/naecommerce dest=/etc/nginx/sites-enabled/naecommerce state=link
+    - name: Link NoisyAtom Nginx config file in sites-available to sites-enabled
+      file: src=/etc/nginx/sites-available/{{nginx_config}} dest=/etc/nginx/sites-enabled/{{nginx_config}} state=link
       notify: Reload Nginx to enable the site
-      notify: Reload Gunicorn WSGI Server
+      notify: Restart Gunicorn WSGI Server
 
     - name: Reload Nginx to enable the site
       service: name=nginx state=restarted enabled=yes
 
-    - name: Reload Gunicorn WSGI Server
-      service: name=gunicorn state=reloaded enabled=yes
+    - name: Restart Gunicorn WSGI Server
+      service: name=gunicorn state=restarted enabled=yes
